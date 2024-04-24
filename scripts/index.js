@@ -1,6 +1,7 @@
 
 let noteList = document.getElementById("main-list")
 let inputNoteText = document.getElementById("input-new-note")
+let inputSearch = document.getElementById('search')
 
 let noteCounter = localStorage.getItem("NoteCounter") || 0
     noteCounter = JSON.parse(noteCounter)
@@ -18,19 +19,11 @@ printNotes(userNotes)
     // createNotes("Pasear al perro")
     // createNotes("Dar de comer al gato")
 
-function statusChange(status, array) {
-    let buttonStatus = document.querySelectorAll(status)
-        buttonStatus.forEach(e =>{
-            e.addEventListener('click', (e) => console.log(e.target))
-        })
-    
-    
-    // if (status === 'complete') {
-    //     console.log('si');
-    // }else{
-    //     console.log('no');
-    // }
-}
+
+    inputSearch.addEventListener('input',() =>{
+        filtNotes()
+    })
+    //
 
 
 function filtNotes() {
@@ -64,10 +57,6 @@ function filterStatus(arrayNotes) {
     } else {
         return arrayNotes
     }
-    
-
-    
-    
 }
 
 
@@ -84,10 +73,9 @@ function storageNotes(notes) {
     
 }
 
-// 
 function printNotes(notes) {
-    userNotes = localStorage.getItem("Notes")
-    userNotes = JSON.parse(userNotes) || []
+    // userNotes = localStorage.getItem("Notes")
+    // userNotes = JSON.parse(userNotes) || []
     noteList.innerHTML = ''
     notes.forEach((element,i) => {
         noteList.innerHTML += `
@@ -95,7 +83,7 @@ function printNotes(notes) {
             <p>${element.activty}</p>
             <div>
                 <button>Editar</button>
-                <button class='delete-btn' id='${element.id}'>Borar</button>
+                <button class='delete-btn' id='${element.id}'>Borrar</button>
                 <button class='status ${element.status}' id="${element.id}">${element.status}</button>
                 
                 </div>
@@ -104,7 +92,8 @@ function printNotes(notes) {
                 
             })
             // statusChange('.status',notes)
-            actionDelete('.delete-btn', userNotes)
+            actionDelete('.delete-btn', notes)
+            statusChange('.status', notes)
             
 }
 
@@ -112,6 +101,7 @@ function createNotes(text) {
     noteList.innerHTML = ''
     if (text === "") {
         alert("Necesitas escribir una tarea")
+        printNotes(userNotes)
     } else {
         
         let newNote= {
@@ -122,9 +112,12 @@ function createNotes(text) {
         userNotes.unshift(newNote)
         storageNotes(userNotes)
         printNotes(userNotes)
+        
+        inputNoteText.value = ''
+
+        noteCounter++
+        localStorage.setItem("NoteCounter", JSON.stringify(noteCounter))
     }
-    noteCounter++
-    localStorage.setItem("NoteCounter", JSON.stringify(noteCounter))
 }
 
 function actionDelete(note,arrayNotes) {
@@ -139,19 +132,49 @@ function actionDelete(note,arrayNotes) {
 }
 
 function deleteNote(note, arrayNotes) {
-        let btnTarget = note.target
+
+    let btnTarget = note.target
 
     let notes = arrayNotes.filter(e => e.id != btnTarget.id)
 
     if (notesFiltered.length === 0) {
         userNotes = notes
+        
+
+        
         printNotes(notes)
     } else {
         notesFiltered = arrayNotes.filter(e => e.id != btnTarget.id)
+
         printNotes(notesFiltered)
 
     }
     localStorage.setItem('Notes',JSON.stringify(notes) )
 }
+function statusChange(status, array) {
+    let buttonStatus = document.querySelectorAll(status)
+        buttonStatus.forEach(e =>{
+            e.addEventListener('click', (e) => 
+                actionStatus(e,array)
+        )
+        })
 
+}
 
+function actionStatus(status, array) {
+    let btnTarget = status.target
+    let noteToSwitch = array.filter(e => e.id == btnTarget.id)
+    let newsNotes = array.filter(e => e.id != btnTarget.id)
+    noteToSwitch.map( e=>{ 
+        if (e.status === 'complete') {
+            e.status= 'pending'
+            newsNotes.unshift(e)
+        } else {
+            e.status= 'complete'  
+            newsNotes = newsNotes.concat(e)
+
+        }}
+    )
+    localStorage.setItem('Notes', JSON.stringify(newsNotes))
+    printNotes(newsNotes)
+}
