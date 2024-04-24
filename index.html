@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/index.css">
+    <title>Lista Quehaceres</title>
+</head>
+<body>
+    <header>
+            <h1>
+                Lista de quehaceres
+            </h1>
+    </header>
+    <main>
+        <div class="button-container">
+            <input type="text" id="input-new-note" placeholder="Tarea">
+            <button onclick="createNotes(inputNoteText.value)">Crear</button>
+        </div>
+        <div class="filter-container">
+            <div>
+                <label>
+                    <input type="checkbox" name="pending" onChange=filtNotes() class="filter-check" id="filter-pending">
+                    Pendiente
+                </label>
+                <label >
+                    <input type="checkbox" name="complete" onChange=filtNotes() class="filter-check" id="filter-complete">
+                        Completado
+                </label>
+            </div>
+            <label>
+                <input type="text" name="" onChange=filtNotes() id="search" placeholder="Buscar">
+            </label>
+        </div>
+
+        <ul id="main-list">
+
+        </ul>
+
+    </main>
+    
+    <footer>
+
+    </footer>
+    <script src="./scripts/index.js"></script>
+</body>
+</html>
