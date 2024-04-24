@@ -10,6 +10,7 @@ let userNotes = localStorage.getItem("Notes")
 
 let notesFiltered = []
 
+
 let searchValue;
 
 let checksInputs;
@@ -132,8 +133,9 @@ function actionDelete(note,arrayNotes) {
 }
 
 function deleteNote(note, arrayNotes) {
-
-    let btnTarget = note.target
+    let confirmation= window.confirm('Seguro que quieres eliminar la nota?')
+    if (confirmation) {
+        let btnTarget = note.target
 
     let notes = arrayNotes.filter(e => e.id != btnTarget.id)
 
@@ -149,7 +151,14 @@ function deleteNote(note, arrayNotes) {
         printNotes(notesFiltered)
 
     }
+    alert('Nota eliminada')
+
     localStorage.setItem('Notes',JSON.stringify(notes) )
+}else{
+        alert('Entendido')
+    }
+
+    
 }
 function statusChange(status, array) {
     let buttonStatus = document.querySelectorAll(status)
