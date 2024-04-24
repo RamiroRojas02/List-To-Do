@@ -13,13 +13,12 @@ let searchValue;
 
 let checksInputs;
 
-
 printNotes(userNotes)
     
     // createNotes("Pasear al perro")
     // createNotes("Dar de comer al gato")
 
-function statusChange(status) {
+function statusChange(status, array) {
     let buttonStatus = document.querySelectorAll(status)
         buttonStatus.forEach(e =>{
             e.addEventListener('click', (e) => console.log(e.target))
@@ -37,8 +36,9 @@ function statusChange(status) {
 function filtNotes() {
     let notesCheck = filterStatus(userNotes)
     let valueSearch = document.getElementById("search").value
-    
+
     notesFiltered =filterText(valueSearch,notesCheck)
+
     
     printNotes(notesFiltered)
 }
@@ -48,20 +48,18 @@ function filterStatus(arrayNotes) {
     let inputsChecks = [...document.getElementsByClassName("filter-check")]
     let filteredByCheck = arrayNotes
     let array = []
+    let checks = []
 
-    inputsChecks = inputsChecks.filter(e => e.checked) 
+    checks = inputsChecks.filter(e => e.checked) 
 
-
-
-    inputsChecks.map(e => 
+    checks.map(e => 
 
         (array = array.concat(
             filteredByCheck.filter(
             note => note.status === e.name
         ))))
     
-
-    if (array.length !== 0) {
+    if (checks.length !== 0) {
         return array
     } else {
         return arrayNotes
@@ -76,7 +74,7 @@ function filterStatus(arrayNotes) {
 function filterText(text,arrayNotes) {
     
     let notesFilteredByText = arrayNotes.filter(e => e.activty.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
-    console.log(notesFilteredByText);
+
     return notesFilteredByText
 }
 
@@ -86,9 +84,10 @@ function storageNotes(notes) {
     
 }
 
-
 // 
 function printNotes(notes) {
+    userNotes = localStorage.getItem("Notes")
+    userNotes = JSON.parse(userNotes) || []
     noteList.innerHTML = ''
     notes.forEach((element,i) => {
         noteList.innerHTML += `
@@ -96,16 +95,17 @@ function printNotes(notes) {
             <p>${element.activty}</p>
             <div>
                 <button>Editar</button>
-                <button>Borar</button>
+                <button class='delete-btn' id='${element.id}'>Borar</button>
                 <button class='status ${element.status}' id="${element.id}">${element.status}</button>
-
-            </div>
-        </div>
-        `
-        
-    })
-    statusChange('.status')
-    
+                
+                </div>
+                </div>
+                `
+                
+            })
+            // statusChange('.status',notes)
+            actionDelete('.delete-btn', userNotes)
+            
 }
 
 function createNotes(text) {
@@ -117,7 +117,7 @@ function createNotes(text) {
         let newNote= {
             activty: text,
             status: "pending",
-            id: noteCounter,
+            id:noteCounter,
         }
         userNotes.unshift(newNote)
         storageNotes(userNotes)
@@ -127,9 +127,31 @@ function createNotes(text) {
     localStorage.setItem("NoteCounter", JSON.stringify(noteCounter))
 }
 
+function actionDelete(note,arrayNotes) {
+    let buttonDelete = document.querySelectorAll(note)
+    buttonDelete.forEach(e =>{
+        e.addEventListener('click', (e) => 
+            deleteNote(e,arrayNotes)
+        )
+
+    
+    })
+}
 
 function deleteNote(note, arrayNotes) {
-    
+        let btnTarget = note.target
+
+    let notes = arrayNotes.filter(e => e.id != btnTarget.id)
+
+    if (notesFiltered.length === 0) {
+        userNotes = notes
+        printNotes(notes)
+    } else {
+        notesFiltered = arrayNotes.filter(e => e.id != btnTarget.id)
+        printNotes(notesFiltered)
+
+    }
+    localStorage.setItem('Notes',JSON.stringify(notes) )
 }
 
 
